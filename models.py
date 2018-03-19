@@ -38,7 +38,6 @@ def get_encounters(patient_id, data):
 
         try:
             plaintext_bytes = hybrid_abe.decrypt(pk, private_key, ciphertext_object)
-            plaintext_bytes = zlib.decompress(plaintext_bytes)
             plaintext = json.loads(str(plaintext_bytes, 'utf-8'))
             encounter_object = plaintext['encounter']
             policy = plaintext['policy']
@@ -87,7 +86,7 @@ def get_encounter(encounter_id, data):
     secret_key = data['private_key']
     orchestration_results = []
 
-    encounter_encrypted, encounter_orchestration, status_code = create_orchestration('http://abe-in-shr.cs300ohie.net',
+    encounter_encrypted, encounter_orchestration, status_code = create_orchestration('http://abe-out-shr.cs300ohie.net',
                                                                      '/encounters/{}'.format(encounter_id),
                                                                      'Get Encounters',
                                                                      'GET')
@@ -100,7 +99,6 @@ def get_encounter(encounter_id, data):
 
     try:
         plaintext_bytes = hybrid_abe.decrypt(pk, private_key, ciphertext_object)
-        plaintext_bytes = zlib.decompress(plaintext_bytes)
         plaintext = json.loads(str(plaintext_bytes, 'utf-8'))
         encounter_object = plaintext['encounter']
         policy = plaintext['policy']
@@ -170,17 +168,23 @@ def get_encounter(encounter_id, data):
             'Decrypted': 'FALSE'
         }
         response = create_response_object(status_code, {'encounter': encounter})
-
+    print(response)
     return create_openhim_response_object(response, orchestration_results, properties)
 
 def save_encounter(data):
 
     policy = data['policy']
-    del data['policy']
+    user_id = data['user_id']
+    del data['user_id']
 
     orchestration_results = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        ta_future = executor.submit(create_orchestration, 
+                                    'http://bsw-ta.cs300ohie.net',
+                                    '/user/{}'.format(user_id),
+                                    'Validate User',
+                                    'GET')
         # validate patient
         cr_future = executor.submit(create_orchestration, 
                                     'http://default-cr.cs300ohie.net', 
@@ -203,17 +207,33 @@ def save_encounter(data):
                                           'Validate Location',
                                           'GET')
 
+        orchestration_results.append(ta_future.result()[1])
         orchestration_results.append(cr_future.result()[1])
         for i in range(len(data['providers'])):
             orchestration_results.append(provider_futures[i].result()[1])
         orchestration_results.append(facility_future.result()[1])
 
-    encounter_id, orchestration, status_code = create_orchestration('http://abe-in-shr.cs300ohie.net',
+    del data['policy']
+    plaintext = json.dumps({
+        'encounter': data,
+        'policy': policy
+    })
+
+    ciphertext = hybrid_abe.encrypt(pk, plaintext, policy)
+    ciphertext = objectToBytes(ciphertext, groupObj)
+    ciphertext = str(ciphertext, 'utf-8')
+
+    payload = {
+        'patient_id': data['patient_id'],
+        'contents': ciphertext
+    }
+
+    encounter_id, orchestration, status_code = create_orchestration('http://abe-out-shr.cs300ohie.net',
                                                                     '/encounters',
                                                                     'Create Encounter',
                                                                     'POST',
                                                                     headers={'Content-Type': 'application/json'},
-                                                                    request_body=data)
+                                                                    request_body=payload)
     orchestration_results.append(orchestration)
 
     properties = {

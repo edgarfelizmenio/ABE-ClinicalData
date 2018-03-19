@@ -23,7 +23,7 @@ def encounter_patient(patient_id):
         mediator_response.headers["Content-Type"] = 'application/json+openhim'
         return mediator_response
 
-@app.route('/encounters/<int:encounter_id>', methods = ['GET'])
+@app.route('/encounters/<int:encounter_id>', methods = ['POST'])
 def encounter(encounter_id):
     data = request.get_json()
     result = models.get_encounter(encounter_id, data)
