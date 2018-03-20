@@ -7,6 +7,7 @@ Mediator for saving and querying clinical data with ABE
     * ```nginx/abe-clinicaldata-nginx.conf```
     * ```upstart/abe-clinicaldata-upstart.conf```
     * ```config.py```
+    * ```crypto_config.py```
     * ```install.sh```
     * ```config/config.json```
     * ```config/mediator.json```
