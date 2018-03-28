@@ -4,8 +4,8 @@ import requests
 
 from utils.config import *
 from crypto_config import *
+from config import *
 import traceback
-import config
 
 def get_encounters(patient_id, data):
 
