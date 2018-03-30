@@ -1,5 +1,6 @@
 import hashlib
 import requests
+import warnings
 
 authUserMap = {}
 
@@ -9,7 +10,9 @@ def authenticate(username, apiURL, rejectUnauthorized):
         'rejectUnauthorized': rejectUnauthorized,
     }
 
-    response = requests.get(requestOptions['url'], verify = rejectUnauthorized)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        response = requests.get(requestOptions['url'], verify = rejectUnauthorized)
     if (response.status_code != 200):
         raise Exception('User {} not found when authenticating with core API'.format(username))
 

@@ -1,6 +1,7 @@
 import json
 import logging
 import requests
+import warnings
 
 from uptime import uptime
 from .auth import *
@@ -9,7 +10,9 @@ def register_mediator(username, password, apiUrl, rejectUnauthorized, mediator_c
     authenticate(username, apiUrl, rejectUnauthorized)
     auth_headers = generate_auth_headers(username, password)
 
-    response = requests.post('{}/mediators'.format(apiUrl), headers = auth_headers, json=mediator_config, verify=rejectUnauthorized)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        response = requests.post('{}/mediators'.format(apiUrl), headers = auth_headers, json=mediator_config, verify=rejectUnauthorized)
     if (response.status_code == 201):
         logging.info('Successfully registered mediator.')
     else:
@@ -28,7 +31,9 @@ def send_heartbeat(username, password, apiUrl, rejectUnauthorized, urn, forceCon
         json['config'] = True
 
     logging.info(url)
-    response = requests.post(url, headers=headers, json=json, verify=rejectUnauthorized)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        response = requests.post(url, headers=headers, json=json, verify=rejectUnauthorized)
     if (response.status_code != 200):
         raise Exception('Heartbeat unsuccessful, received status code of {}'.format(response.status_code))
         # logging.info('Heartbeat unsuccessful, received status code of {}'.format(response.status_code))
@@ -48,8 +53,10 @@ def fetch_config(username, password, apiUrl, rejectUnauthorized, urn):
 def install_mediator_channels(username, password, apiUrl, rejectUnauthorized, urn, channels=[]):    
     uri = '{}/mediators/{}/channels'.format(apiUrl, urn)
     headers = generate_auth_headers(username, password)
-    response = requests.post(uri, headers=headers, json=channels, verify=rejectUnauthorized)
     
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        response = requests.post(uri, headers=headers, json=channels, verify=rejectUnauthorized)
     if (response.status_code == 201):
         logging.info("Channel successfully installed.")
     else:
