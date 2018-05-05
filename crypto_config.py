@@ -15,8 +15,14 @@ groupObj = PairingGroup('SS512')
 cpabe = CPabe_BSW07(groupObj)
 hybrid_abe = HybridABEnc(cpabe, groupObj)
 
-master_key = requests.get('{}/masterkey'.format(ta_il_url),
-                          auth=auth).json()
+while True:
+	print("Requesting Master Key...")
+	response = requests.get('{}/masterkey'.format(ta_url),
+    	                      auth=auth)
+	master_key = response.json()
+	if master_key is not None:
+		break
+	print("Master Key not available.")
 
 pk = bytesToObject(master_key['pk'].encode('utf-8'), groupObj)
 mk = bytesToObject(master_key['mk'].encode('utf-8'), groupObj)

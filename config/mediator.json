@@ -47,6 +47,6 @@
     }
   ],
   "config": {
-    "upstreamUrl": "10.147.72.11:5000"
+    "upstreamUrl": "http://10.147.72.11:5000"
   }
 }

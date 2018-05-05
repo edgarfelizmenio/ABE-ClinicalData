@@ -35,7 +35,10 @@ def send_heartbeat(username, password, apiUrl, rejectUnauthorized, urn, forceCon
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         response = requests.post(url, headers=headers, json=json, verify=rejectUnauthorized)
+<<<<<<< HEAD
     
+=======
+>>>>>>> 1eb77751c642024a68cf6be1316344ccd07b2850
     if (response.status_code != 200):
         raise Exception('Heartbeat unsuccessful, received status code of {}'.format(response.status_code))
         # logging.info('Heartbeat unsuccessful, received status code of {}'.format(response.status_code))
@@ -58,11 +61,17 @@ def fetch_config(username, password, apiUrl, rejectUnauthorized, urn):
 def install_mediator_channels(username, password, apiUrl, rejectUnauthorized, urn, channels=[]):    
     uri = '{}/mediators/{}/channels'.format(apiUrl, urn)
     headers = generate_auth_headers(username, password)
+<<<<<<< HEAD
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         response = requests.post(uri, headers=headers, json=channels, verify=rejectUnauthorized)
+=======
+>>>>>>> 1eb77751c642024a68cf6be1316344ccd07b2850
     
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        response = requests.post(uri, headers=headers, json=channels, verify=rejectUnauthorized)
     if (response.status_code == 201):
         logging.info("Channel successfully installed.")
     else:
