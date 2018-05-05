@@ -61,13 +61,6 @@ def fetch_config(username, password, apiUrl, rejectUnauthorized, urn):
 def install_mediator_channels(username, password, apiUrl, rejectUnauthorized, urn, channels=[]):    
     uri = '{}/mediators/{}/channels'.format(apiUrl, urn)
     headers = generate_auth_headers(username, password)
-<<<<<<< HEAD
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        response = requests.post(uri, headers=headers, json=channels, verify=rejectUnauthorized)
-=======
->>>>>>> 1eb77751c642024a68cf6be1316344ccd07b2850
     
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
