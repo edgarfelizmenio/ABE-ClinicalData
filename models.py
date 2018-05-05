@@ -117,7 +117,7 @@ def get_encounter(encounter_id, data):
             for provider in encounter_object['providers']:
                 provider_future = executor.submit(create_orchestration, 
                                 hwr_url,
-                                '/provider/{}'.format(provider_id),
+                                '/provider/{}'.format(provider['provider_id']),
                                 'Validate Provider',
                                 'GET')
                 provider_futures.append(provider_future)
@@ -128,7 +128,7 @@ def get_encounter(encounter_id, data):
                                             'Validate Location',
                                             'GET')
 
-            patient_info, patient_orchestration, patient_status_code = cr_future.result()
+            patient_info, patient_orchestration, status_code = cr_future.result()
             encounter_object['patient_name'] = '{} {}'.format(patient_info['given_name'], patient_info['family_name'])
             encounter_object['gender'] = patient_info['gender']
             encounter_object['city'] = patient_info['city']
@@ -137,21 +137,21 @@ def get_encounter(encounter_id, data):
             orchestration_results.append(patient_orchestration)
 
             for i in range(len(encounter_object['providers'])):
-                provider_info, provider_orchestration, provider_status_code = provider_futures[i].result()
+                provider_info, provider_orchestration, status_code = provider_futures[i].result()
                 provider = encounter_object['providers'][i]
                 provider['attributes'] = provider_info['attributes']
                 provider['identifier'] = provider_info['identifier']
                 provider['name'] = provider_info['name']
                 orchestration_results.append(provider_orchestration)
             
-            facility_info, facility_orchestration, facility_status_code = facility_future.result()
+            facility_info, facility_orchestration, status_code = facility_future.result()
             encounter_object['location_name'] = facility_info['name']
             orchestration_results.append(facility_orchestration)
 
         encounter_object['policy'] = policy
         properties = {
             'Encounter': 'id: {}, Patient id: {}, {}, {}, {}'.format(
-                encounter_object['encounter_id'], 
+                encounter_encrypted['encounter_id'], 
                 encounter_object['patient_id'],
                 encounter_object['encounter_type_description'],
                 encounter_object['location_name'],
@@ -170,7 +170,6 @@ def get_encounter(encounter_id, data):
             'Decrypted': 'FALSE'
         }
         response = create_response_object(status_code, {'encounter': encounter})
-    print(response)
     return create_openhim_response_object(response, orchestration_results, properties)
 
 def save_encounter(data):
