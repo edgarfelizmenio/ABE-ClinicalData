@@ -16,7 +16,7 @@ app = Flask(__name__)
 appLogger = logging.StreamHandler()
 appLogger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 app.logger.addHandler(appLogger)
-app.logger.setLevel(logging.INFO)
+app.logger.setLevel(logging.DEBUG)
 
 logging.info('apiConfig: %s', apiConfig)
 logging.info('mediatorConfig: %s', mediatorConfig)

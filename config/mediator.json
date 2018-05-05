@@ -15,20 +15,22 @@
       "routes": [
         {
           "name": "ABE Clinical Encounter",
-          "host": "abe-clinical-encounter.cs300ohie.net",
+          "host": "10.147.72.12",
           "port": "80",
           "primary": true,
           "type": "http"
         }
       ],
       "allow": ["tut"],
-      "type": "http"
+      "type": "http",
+      "authType": "public",
+      "methods": ["GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"]
     }
   ],
   "endpoints": [
     {
       "name": "ABE Clinical Encounter",
-      "host": "abe-clinical-encounter.cs300ohie.net",
+      "host": "10.147.72.12",
       "path": "/",
       "port": "80",
       "primary": true,
@@ -45,6 +47,6 @@
     }
   ],
   "config": {
-    "upstreamUrl": "http://abe-in-il.cs300ohie.net:5000"
+    "upstreamUrl": "10.147.72.11:5000"
   }
 }

@@ -2,8 +2,8 @@
   "api": {
     "username": "root@openhim.org",
     "password": "password",
-    "apiURL": "https://abe-in-il.cs300ohie.net:8080",
-    "trustSelfSigned": false
+    "apiURL": "https://10.147.72.11:8080",
+    "trustSelfSigned": true
   },
   "register": true,
   "heartbeat": true
