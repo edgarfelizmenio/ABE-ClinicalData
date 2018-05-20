@@ -20,6 +20,7 @@ def get_encounters(patient_id, data):
                                                                  'GET')
     orchestration_results.append(patient_orchestration)
 
+
     encounter_ids, encounter_id_orchestration, status_code = create_orchestration(shr_url,
                                                                      '/encounters/patient/{}'.format(patient_id),
                                                                      'Get Encounter Ids',
@@ -92,6 +93,9 @@ def get_encounter(encounter_id, data):
                                                                      '/encounters/{}'.format(encounter_id),
                                                                      'Get Encounters',
                                                                      'GET')
+    if status_code != 200:
+        response = create_response_object(status_code, {})
+        return create_openhim_response_object(response, orchestration_results, {})
     orchestration_results.append(encounter_orchestration)
 
     ciphertext = encounter_encrypted['contents']
@@ -129,6 +133,9 @@ def get_encounter(encounter_id, data):
                                             'GET')
 
             patient_info, patient_orchestration, status_code = cr_future.result()
+            if status_code != 200:
+                response = create_response_object(status_code, {})
+                return create_openhim_response_object(response, orchestration_results, {})
             encounter_object['patient_name'] = '{} {}'.format(patient_info['given_name'], patient_info['family_name'])
             encounter_object['gender'] = patient_info['gender']
             encounter_object['city'] = patient_info['city']
@@ -138,6 +145,9 @@ def get_encounter(encounter_id, data):
 
             for i in range(len(encounter_object['providers'])):
                 provider_info, provider_orchestration, status_code = provider_futures[i].result()
+                if status_code != 200:
+                    response = create_response_object(status_code, {})
+                    return create_openhim_response_object(response, orchestration_results, {})
                 provider = encounter_object['providers'][i]
                 provider['attributes'] = provider_info['attributes']
                 provider['identifier'] = provider_info['identifier']
@@ -145,6 +155,9 @@ def get_encounter(encounter_id, data):
                 orchestration_results.append(provider_orchestration)
             
             facility_info, facility_orchestration, status_code = facility_future.result()
+            if status_code != 200:
+                response = create_response_object(status_code, {})
+                return create_openhim_response_object(response, orchestration_results, {})
             encounter_object['location_name'] = facility_info['name']
             orchestration_results.append(facility_orchestration)
 
@@ -235,6 +248,9 @@ def save_encounter(data):
                                                                     'POST',
                                                                     headers={'Content-Type': 'application/json'},
                                                                     request_body=payload)
+    if status_code != 201:
+        response = create_response_object(status_code, {})
+        return create_openhim_response_object(response, orchestration_results, {})
     orchestration_results.append(orchestration)
 
     properties = {
